@@ -1,77 +1,63 @@
 # Open Food Facts Parser API
 
-Uma API RESTful desenvolvida para facilitar a curadoria e revisão de dados nutricionais do projeto Open Food Facts pela equipe da Fitness Foods LC.
+Uma API RESTful para curadoria de dados nutricionais do projeto Open Food Facts.
 
-Este é um desafio técnico (challenge) da [Coodesh](https://coodesh.com/).
-
----
-
-## Como eu vou resolver isso: Meu plano
-
-Esse aqui é o meu roteiro (e a documentação da minha linha de raciocínio). Vou seguir as regras usando a stack mais proxima possivel da vaga. Pode ser que eu tenha que revisar o plano depois, mas já é bom ter algo para usar como uma espécie de fluxograma de como vou abordar o problema.
+Este projeto foi desenvolvido como parte de um desafio técnico para a Fitness Foods LC. A API permite gerenciar informações sobre produtos alimentícios, automatizando a importação de dados da base do Open Food Facts e fornecendo endpoints para consulta e edição.
 
 ---
 
-### A Stack que eu escolhi
-- **Linguagem:** PHP 8.3
-- **Framework:** Laravel 11
-- **Banco de Dados:** PostgreSQL 16
-- **Cache/Fila:** Redis (Para eu não travar o CRON)
-- **Container:** Docker com Laravel Sail (para eu não ter dor de cabeça com ambiente)
-- **Testes:** PHPUnit
+## 📋 Diferenciais do Desafio
+
+Abaixo está o resumo dos diferenciais solicitados e como cada um foi atendido neste projeto:
+
+- **Diferencial 1: Endpoint de busca com Elastic Search ou similares**
+  - ❌ Não implementado. O projeto possui listagem paginada e consulta por código, mas não busca avançada.
+
+- **Diferencial 2: Docker para facilitar deploy**
+  - ✅ Cumprido! O projeto utiliza Docker/Laravel Sail, permitindo fácil setup e deploy para DevOps.
+
+- **Diferencial 3: Sistema de alerta para falhas no Sync**
+  - ✅ Cumprido! Falhas de importação são registradas em `import_histories` e nos logs, permitindo monitoramento e alerta.
+
+- **Diferencial 4: Documentação OpenAPI 3.0**
+  - ✅ Cumprido! Documentação gerada com L5-Swagger, disponível em `/docs` e `/api-docs`.
+
+- **Diferencial 5: Unit Tests para GET e PUT**
+  - ✅ Cumprido! Testes automatizados garantem o funcionamento dos endpoints GET e PUT do CRUD.
+
+- **Diferencial 6: Segurança via API KEY**
+  - ✅ Cumprido! Todos os endpoints são protegidos por middleware que exige o header `x-api-key`.
+
 
 ---
 
-### 📝 O que eu vou fazer (Passo a Passo)
+## Como eu planejei resolver o desafio?
 
-#### Passo 1: Preparando o meu terreno (Setup)
-Antes de começar a codar, eu preciso deixar o ambiente pronto.
-- **Minha ideia:** Vou usar o Docker para garantir que tudo funcione igual no meu PC e no deploy.
-- **Detalhe:** Vou configurar o Laravel para já reconhecer o banco e avisar que o Redis vai cuidar das filas pesadas que eu vou criar depois.
-
-#### Passo 2: Como eu vou guardar esses dados?
-Agora eu foco no banco. Preciso criar uma estrutura que aceite o JSON deles, mas com os meus campos extras: quero saber a hora exata que importei e o status (se está em rascunho, publicado ou no lixo).
-Preciso configurar uma tabela de logs , registra cada tentativa de importação (se deu problema, quantos itens vieram,etc).
-- **Lembrete:** Não vou deletar nada de verdade agora. Se eu precisar apagar algo, só mudo o status para "trash".
-- **Para depois:** Se esse banco explodisse de tamanho, como eu iria manter a busca rápida? Por enquanto, vou manter simples com índices básicos, mas é algo a se pensar.
-
-#### Passo 3: Encarando a importação (A parte chata)
-Aqui é o maior desafio. Vou ter que baixar arquivos gigantes todo dia.
-Eu fiz um teste inicial e vi que o arquivo compactado já passa dos 55MB, o que significa que descompactado ele deve bater quase 1GB de puro texto.
-- **Minha estratégia:** Não vou tentar ler tudo de uma vez para não fritar o servidor. Vou ler em pedaços e salvar só os primeiros 100 de cada arquivo.
-- **Meu Plano B:** Vou deixar para detalhar as filas e as tentativas de erro quando eu estiver com a mão na massa, porque sei que isso ai pode complicar e aparecer novas necessidade que não pensei agora. 
-Por enquanto o que eu ja sei é que se o site deles cair ou o download falhar, vou usar o sistema de logs que planejei no Passo 2 para me avisar. Se der erro, o Job volta para a fila para tentar de novo (retry), assim não perco o dado.
-
-#### Passo 4: Expondo meus dados (Criando a API)
-Vou fazer o básico:
-- Uma rota inicial só para eu checar a saúde do sistema.
-- A lista de produtos (com paginação, porque além de boas práticas e eu não sou maluco de carregar tudo de uma vez).
-- Os jeitos de eu ver, editar e "esconder" cada produto.
-- **Lembrete:** Usar o SKU do produto e não o ID autoincrement nas rotas , já que o desafio foca no campo 'code'.
-
-#### Passo 5: Segurança e o meu manual
-Vou colocar uma chave (API Key) na porta de entrada. 
-- Vou criar o manual da API usando o padrão OpenAPI 3.0 (Swagger). É um diferencial da vaga (e de quebra, já deixo documentado como usar a chave de segurança).
-
-#### Passo 6: Check-up final (Será que funcionou?)
-Antes de dar como finalizado, vou testar tudo. Vou ver se minha chave bloqueia intrusos, se o produto realmente vai para o lixo quando eu mando e se os dados estão consistentes.
-- Se eu encontrar erro, eu paro, respiro (vou passear com os cachorros) e conserto. O foco é eu entregar um núcleo sólido, e o prazo é mais que o suficiente para não me afobar.
+Essa aqui é a documentação final , trazendo uma linguagem mais profissional de como o projeto ficou e seria consumido por outros profissionais.
+No primeiro commit , eu fiz um registro mais voltado ao meu planejamento e linha de raciocínio.
+Para entender melhor como foi planejado, por favor voltar ao commit "bfda214" , onde esse mesmo readme era voltado para uma explicação mais informal da idéia.
+Informações mais técnicas foram documentadas de maneira informal com comentários dentro dos próprios arquivos.
 
 ---
 
-### ✅ Meu Checklist
-- [ ] Docker rodando redondo com Postgres e Redis.
-- [ ] Estrutura do banco seguindo o modelo que eu planejei.
-- [ ] Meu CRON trabalhando em silêncio via filas.
-- [ ] Limite de 100 itens sendo respeitado (não posso esquecer!).
-- [ ] Minha API respondendo JSON bonitinho.
-- [ ] Todos os meus testes passando com um `php artisan test`.
+## 🚀 Tecnologias Utilizadas
 
---- 
+- **PHP 8.4** com **Laravel 12**
+- **PostgreSQL 18** (Banco de dados principal)
+- **Redis** (Driver de filas para processamento em background)
+- **Docker & Laravel Sail** (Orquestração do ambiente)
+- **L5-Swagger** (Documentação OpenAPI 3.0)
+- **PHPUnit** (Testes de funcionalidade)
 
-## 🚀 Como instalar e usar 
+---
 
-**Pré-requisitos:** Docker Desktop instalado.
+## 🛠️ Instalação e Configuração
+
+### Pré-requisitos
+- Docker Desktop instalado.
+- Git.
+
+### Passos para rodar o projeto
 
 1. **Clone o repositório:**
    ```bash
@@ -79,23 +65,132 @@ Antes de dar como finalizado, vou testar tudo. Vou ver se minha chave bloqueia i
    cd open-food-parser
    ```
 
-2. **Suba o ambiente (Docker):**
+2. **Configure o ambiente:**
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Instale as dependências do Composer:**
+   Se você **não** tem PHP instalado localmente, use este container temporário:
+   ```bash
+   docker run --rm -v "${PWD}:/var/www/html" -w /var/www/html laravelsail/php84-composer:latest composer install --ignore-platform-reqs
+   ```
+   Caso já tenha PHP 8.4+, basta rodar:
+   ```bash
+   composer install
+   ```
+
+4. **Suba o ambiente com Docker Sail:**
    ```bash
    ./vendor/bin/sail up -d
    ```
+   *(Se for a primeira vez, o Docker irá baixar as imagens PostgreSQL e Redis. Isso pode levar alguns minutos.)*
 
-3. **Instale as dependências:**
+5. **Gere a chave da aplicação e rode as migrations:**
    ```bash
-   ./vendor/bin/sail composer install
+   ./vendor/bin/sail artisan key:generate
    ```
-
-4. **Prepare o Banco de Dados:**
+    **Nota:** Se o comando falhar por permissões. 
+    Use a flag `--show` e Copie a chave gerada e cole manualmente no arquivo `.env` na linha `APP_KEY=`.
+   ```bash
+   ./vendor/bin/sail artisan key:generate --show
+   ```
+   Depois rode a migration
    ```bash
    ./vendor/bin/sail artisan migrate
    ```
 
-5. **Acesse a API:**
-   - Documentação (Swagger): `http://localhost/api/documentation`
-   - Testes: `./vendor/bin/sail artisan test`
+6. **Corrija permissões (se necessário):**
+   Em ambientes Windows/WSL, pode ser necessário liberar permissões de escrita:
+   ```bash
+   docker exec -u 0 open-food-parser-laravel.test-1 chmod -R 777 storage bootstrap/cache
+   ```
+
+7. **Execute a primeira importação:**
+   ```bash
+   ./vendor/bin/sail artisan app:import-products
+   ```
+   *(Isso importará os primeiros 100 produtos de cada arquivo do Open Food Facts. Certifique-se de que o worker está rodando: `./vendor/bin/sail artisan queue:work`)*
+
+4. **Configuração da API Key:**
+   O projeto utiliza um middleware de segurança. A chave padrão definida no `.env` é `fitness_food_secret_key`.
+   Todas as requisições para a API devem conter o header:
+   `x-api-key: fitness_food_secret_key`
+
+---
+
+## Sistema de Importação (CRON)
+
+O sistema de importação foi projetado para ser eficiente em memória, processando arquivos `.json.gz` via streaming.
+
+O agendamento da importação é realizado via CRON às 03:00 (Horário de Brasília) por padrão. Você pode configurar o horário e o fuso horário no seu `.env`:
+- `APP_TIMEZONE=America/Sao_Paulo`
+- `IMPORT_SCHEDULE_TIME=03:00`
+
+---
+
+## 📖 Documentação da API (Swagger)
+
+A API possui documentação interativa através do Swagger UI.
+- **URL da Documentação:** [http://localhost/docs](http://localhost/docs)
+- **Especificação JSON:** [http://localhost/api-docs](http://localhost/api-docs)
+
+---
+
+## 🧪 Testes
+
+Para garantir que tudo está funcionando como esperado, você pode rodar a suíte de testes automatizados:
+
+```bash
+./vendor/bin/sail artisan test
+```
+
+---
+
+
+
+
+- **Execução manual:**
+  Para testar a importação, execute:
+  ```bash
+  ./vendor/bin/sail artisan app:import-products
+  ```
+- **Fila de processamento:**
+  A importação manda jobs para o Redis. Certifique-se de que o worker está rodando (o Sail já sobe um em background se configurado, ou você pode rodar):
+  ```bash
+  ./vendor/bin/sail artisan queue:work
+  ```
+---
+
+## 🧪 Testes
+
+Para rodar os testes automatizados:
+```bash
+./vendor/bin/sail artisan test
+```
+
+---
+
+## 📖 Documentação da API (Swagger)
+
+A documentação completa dos endpoints (OpenAPI 3.0) pode ser acessada em:
+`http://localhost/docs`
+
+---
+
+## 🛣️ Endpoints Principais
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/api/` | Detalhes da API, status do banco e uptime. |
+| GET | `/api/products` | Lista produtos (paginado). |
+| GET | `/api/products/{code}` | Detalhes de um produto específico. |
+| PUT | `/api/products/{code}` | Atualiza dados de um produto. |
+| DELETE| `/api/products/{code}` | Altera o status do produto para `trash`. |
+
+---
+
+## ✒️ Autor
+Desenvolvido por Carlos Lima de Souza como parte do desafio Coodesh.
 
 ---
