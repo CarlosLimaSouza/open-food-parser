@@ -103,7 +103,7 @@ Informações mais técnicas foram documentadas de maneira informal com comentá
 6. **Corrija permissões (se necessário):**
    Em ambientes Windows/WSL, pode ser necessário liberar permissões de escrita:
    ```bash
-   docker exec -u 0 open-food-parser-laravel.test-1 chmod -R 777 storage bootstrap/cache
+   docker exec -u 0 <nome-do-container>.test-1 chmod -R 777 storage bootstrap/cache
    ```
 
 7. **Execute a primeira importação:**
