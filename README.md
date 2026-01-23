@@ -129,6 +129,24 @@ O agendamento da importação é realizado via CRON às 03:00 (Horário de Bras�
 
 ---
 
+## ⏰ Observação sobre o CRON do Laravel
+
+O agendamento de tarefas do Laravel (schedule) **não executa automaticamente**. É necessário um "gatilho" externo para rodar as tarefas agendadas:
+
+- Em produção, configure o cron do sistema para rodar o comando abaixo a cada minuto:
+  ```bash
+  * * * * * cd /caminho/do/projeto && php artisan schedule:run >> /dev/null 2>&1
+  ```
+- No ambiente Docker/Sail, você pode deixar um terminal rodando:
+  ```bash
+  ./vendor/bin/sail artisan schedule:work
+  ```
+  Assim, o schedule do Laravel executa as tarefas automaticamente no tempo configurado.
+
+Se rodar apenas `schedule:run` manualmente, o cron só executa naquele instante. Para automação real, use um dos métodos acima.
+
+---
+
 ## 📖 Documentação da API (Swagger)
 
 A API possui documentação interativa através do Swagger UI.

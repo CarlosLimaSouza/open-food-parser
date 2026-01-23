@@ -13,7 +13,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withSchedule(function (Schedule $schedule) {
-        $schedule->command('app:import-products')->dailyAt(env('IMPORT_SCHEDULE_TIME', '03:00'));
+        // usei para debugar o horario vindo do .env
+        \Log::info('IMPORT_SCHEDULE_TIME: ' . env('IMPORT_SCHEDULE_TIME', '03:00'));
+
+        $importTime = trim(env('IMPORT_SCHEDULE_TIME', '03:00'));
+        \Log::info('IMPORT_SCHEDULE_TIME agendamento: ' . $importTime);
+        $schedule->command('app:import-products')->dailyAt($importTime);
+
+        // usei isso para teste rapido a cada 1 minuto.
+    //    $schedule->command('app:import-products')->everyMinute();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
