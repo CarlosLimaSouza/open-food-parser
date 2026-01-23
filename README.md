@@ -6,12 +6,20 @@ Este projeto foi desenvolvido como parte de um desafio técnico para a Fitness F
 
 ---
 
+## 📋 Plano de Raciocínio e Desenvolvimento
+
+Para entender o planejamento inicial e a linha de raciocínio por trás deste projeto, consulte o arquivo [README_RACIOCINIO.md](README_RACIOCINIO.md). Ele contém detalhes sobre a abordagem passo a passo, escolhas técnicas e o checklist usado durante o desenvolvimento.
+Foi o primeiro commit do projeto e documenta o pensamento inicial antes de começar a codar.
+
+---
+
 ## 📋 Diferenciais do Desafio
 
 Abaixo está o resumo dos diferenciais solicitados e como cada um foi atendido neste projeto:
 
 - **Diferencial 1: Endpoint de busca com Elastic Search ou similares**
-  - ❌ Não implementado. O projeto possui listagem paginada e consulta por código, mas não busca avançada.
+  - ❌ Não implementado. O projeto possui listagem paginada e consulta por código, mas não busca avançada. (falta de tempo, até tentei colocar 
+  depois de finalizar o básico, mas não consegui fazer o ElasticSearch rodar no Docker a tempo)
 
 - **Diferencial 2: Docker para facilitar deploy**
   - ✅ Cumprido! O projeto utiliza Docker/Laravel Sail, permitindo fácil setup e deploy para DevOps.
